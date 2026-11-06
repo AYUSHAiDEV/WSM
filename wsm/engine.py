@@ -4,7 +4,7 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Dict, List, Sequence
+from typing import Dict, List, Sequence, Tuple
 
 from .document_loader import Document, load_directory
 from .inverted_index import InvertedIndex
@@ -28,6 +28,15 @@ class SearchResponse:
     hits: List[SearchHit]
     expansions: Dict[str, List[str]] = field(default_factory=dict)
     elapsed_ms: float = 0.0
+    steps: List[Tuple[str, List[str]]] = field(default_factory=list)   # retrieval trace
+
+    def steps_text(self) -> str:
+        out = []
+        for title, lines in self.steps:
+            out.append(title)
+            out.extend("    " + ln for ln in lines)
+            out.append("")
+        return "\n".join(out).rstrip()
 
     def to_text(self) -> str:
         lines = [f"Query: {self.query}", f"Matched documents: {len(self.hits)}   ({self.elapsed_ms:.2f} ms)", ""]
@@ -65,7 +74,21 @@ class SearchEngine:
                       self._snippet(self.index.documents[d], result.highlight_terms))
             for d in result.doc_ids
         ]
-        return SearchResponse(query, hits, result.expansions, (time.perf_counter() - start) * 1000)
+        steps = [
+            ("Step 1 · Query received", [f"Raw query: {query}"]),
+            ("Step 2 · Lexical analysis",
+             ["Split into tokens (quotes keep a phrase together; operators are UPPERCASE):",
+              "  " + "   ".join(f"[{kind}] {tok}" for kind, tok in result.tokens)]),
+            ("Step 3 · Parsing and evaluation",
+             ["Recursive-descent parser, precedence NOT > AND > OR.",
+              "Leaves are looked up in the index first; operators then combine the postings lists."]),
+        ]
+        steps += [(f"Step 3.{i} · {title}", lines) for i, (title, lines) in enumerate(result.trace, 1)]
+        steps.append(("Step 4 · Result assembly",
+                      [f"{len(hits)} document(s) matched (Boolean retrieval: unranked, listed by doc id)"]
+                      + [f"  [{r}] {h.title}" for r, h in enumerate(hits[:10], 1)]
+                      + ["Snippet = text around the first matching term in each document."]))
+        return SearchResponse(query, hits, result.expansions, (time.perf_counter() - start) * 1000, steps)
 
     def _snippet(self, doc: Document, terms, width: int = 70) -> str:
         text = doc.text

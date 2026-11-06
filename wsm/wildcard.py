@@ -33,13 +33,20 @@ class PermutermIndex:
         hi = bisect.bisect_left(self._keys, prefix + "\U0010ffff")
         return set(self._terms[lo:hi])
 
-    def match(self, pattern: str) -> List[str]:
-        """All vocabulary terms matching a normalized pattern ('*' = any substring)."""
+    def explain(self, pattern: str) -> dict:
+        """Like match(), but also returns the intermediate steps (for the GUI trace)."""
         if "*" not in pattern:
-            return [pattern] if pattern in self._terms_set else []
+            found = [pattern] if pattern in self._terms_set else []
+            return {"rotated": None, "prefix": None, "candidates": found, "matches": found}
         w = pattern + self.END
         k = w.rindex("*")
-        rotated = w[k + 1:] + w[:k]          # '*' moved to the end (dropped)
-        prefix = rotated.split("*", 1)[0]    # up to the first remaining '*'
+        rotated = w[k + 1:] + w[:k] + "*"      # '*' moved to the end
+        prefix = rotated.split("*", 1)[0]      # up to the first remaining '*'
         regex = re.compile(".*".join(re.escape(p) for p in pattern.split("*")))
-        return sorted(t for t in self._prefix_lookup(prefix) if regex.fullmatch(t))
+        candidates = sorted(self._prefix_lookup(prefix))
+        matches = [t for t in candidates if regex.fullmatch(t)]
+        return {"rotated": rotated, "prefix": prefix, "candidates": candidates, "matches": matches}
+
+    def match(self, pattern: str) -> List[str]:
+        """All vocabulary terms matching a normalized pattern ('*' = any substring)."""
+        return self.explain(pattern)["matches"]

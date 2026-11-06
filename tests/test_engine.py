@@ -85,3 +85,20 @@ def test_accent_query(engine):
 def test_syntax_errors(engine, bad):
     with pytest.raises(QuerySyntaxError):
         engine.search(bad)
+
+
+def test_trace_steps_present(engine):
+    r = engine.search('comput* AND "quick brown"')
+    titles = [t for t, _ in r.steps]
+    assert titles[0].startswith("Step 1") and titles[-1].startswith("Step 4")
+    assert any("Wildcard term" in t for t in titles)
+    assert any("Phrase" in t for t in titles)
+    assert any("AND" in t for t in titles)
+    assert "Permuterm rotation" in r.steps_text()
+
+
+def test_wildcard_explain():
+    p = PermutermIndex(["hello", "help", "halo"])
+    info = p.explain("hel*o")
+    assert info["rotated"] == "o$hel*" and info["prefix"] == "o$hel"
+    assert info["matches"] == ["hello"]
