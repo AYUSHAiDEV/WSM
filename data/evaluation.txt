@@ -1,0 +1,1 @@
+Retrieval systems are evaluated with precision and recall computed against human relevance judgments. Precision is the fraction of retrieved documents that are relevant, while recall is the fraction of relevant documents that are retrieved. Computing both metrics over a test collection allows different systems to be compared fairly.

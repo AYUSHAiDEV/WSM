@@ -1,0 +1,1 @@
+Boolean retrieval answers queries built from terms and the operators AND, OR and NOT. The system intersects postings lists for AND, merges them for OR, and complements them for NOT. Boolean queries give exact control but do not rank documents by relevance.

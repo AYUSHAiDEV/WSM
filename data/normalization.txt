@@ -1,0 +1,1 @@
+Normalization maps different surface forms of a word onto the same term. Case folding converts every letter to lower case so that Computer and computer match. Removing accents lets a user find a cafe even when the document says café.

@@ -1,0 +1,1 @@
+Wildcard queries such as comp* or *tion match many terms at once. A permuterm index rotates every term so a wildcard query becomes a prefix lookup. A k-gram index is an alternative that stores the character sequences of each vocabulary term.

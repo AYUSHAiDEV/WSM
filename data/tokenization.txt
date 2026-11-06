@@ -1,0 +1,1 @@
+Tokenization is the task of chopping a character stream into tokens. Simple tokenizers split on whitespace and punctuation, but hyphens, apostrophes and numbers make the problem harder. The same tokenizer must be applied to documents and to queries, otherwise terms will not match.

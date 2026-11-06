@@ -1,0 +1,1 @@
+Information retrieval is the activity of finding material, usually documents, that satisfies an information need from within a large collection. Web search engines are the most visible application of information retrieval today. A retrieval system must index a collection before queries can be answered quickly.

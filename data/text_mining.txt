@@ -1,0 +1,1 @@
+Text mining extracts patterns and knowledge from unstructured text. Typical tasks include classification, clustering, topic modelling and sentiment analysis. Web mining applies these techniques to web content, link structure and usage logs.

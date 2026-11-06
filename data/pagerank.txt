@@ -1,0 +1,1 @@
+PageRank assigns an importance score to each web page based on the link structure of the web. A page is important if many important pages link to it. The scores are computed with a random surfer model and iterative computation.

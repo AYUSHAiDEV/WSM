@@ -1,0 +1,1 @@
+An inverted index maps each term to the list of documents in which it occurs. This postings list is kept sorted by document identifier so that lists can be merged in linear time. A positional inverted index additionally stores the position of every occurrence, which allows phrase queries.

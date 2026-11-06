@@ -1,0 +1,1 @@
+A web crawler downloads pages by following hyperlinks starting from a set of seed URLs. Crawlers must be polite, respect robots exclusion rules and avoid fetching duplicate pages. The crawled pages are then parsed, tokenized and fed to the indexer.
