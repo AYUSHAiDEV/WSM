@@ -1,0 +1,20 @@
+name: Keep Streamlit app awake
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"      # every 4 hours (UTC)
+  workflow_dispatch:            # lets you run it manually from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install playwright
+      - run: playwright install --with-deps chromium
+      - run: python scripts/keep_alive.py
+        env:
+          APP_URL: "https://uhfcwwrkwg4v3qcbvhns6p.streamlit.app/"
